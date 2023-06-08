@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Travel Booking System</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Create a new travel package form submission
+            $("#package-form").submit(function(e) {
+                e.preventDefault();
+                var packageName = $("#package-name").val();
+                var components = [];
+
+                $(".component-field").each(function() {
+                    var type = $(this).find(".component-type").val();
+                    var name = $(this).find(".component-name").val();
+                    var price = parseFloat($(this).find(".component-price").val());
+
+                    var component = {
+                        type: type,
+                        name: name,
+                        price: price
+                    };
+
+                    components.push(component);
+                });
+
+                var packageData = {
+                    name: packageName,
+                    components: components
+                };
+
+                $.ajax({
+                    url: "/create-package",
+                    type: "POST",
+                    data: JSON.stringify(packageData),
+                    contentType: "application/json",
+                    success: function(response) {
+                        console.log(response);
+                        alert("Package created successfully!");
+                    },
+                    error: function(error) {
+                        console.log(error);
+                        alert("Error creating package. Please try again.");
+                    }
+                });
+            });
+
+            // Add component fields dynamically
+            var componentCount = 1;
+
+            $("#add-component").click(function() {
+                componentCount++;
+
+                var componentField = `
+                    <div class="component-field">
+                        <h4>Component ${componentCount}</h4>
+                        <label for="component-type-${componentCount}">Type:</label>
+                        <input type="text" id="component-type-${componentCount}" class="component-type" required>
+                        <br>
+                        <label for="component-name-${componentCount}">Name:</label>
+                        <input type="text" id="component-name-${componentCount}" class="component-name" required>
+                        <br>
+                        <label for="component-price-${componentCount}">Price:</label>
+                        <input type="number" step="0.01" id="component-price-${componentCount}" class="component-price" required>
+                        <br>
+                    </div>
+                `;
+
+                $("#components").append(componentField);
+            });
+        });
+    </script>
+    <style>
+        /* Add your custom styles here */
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Travel Booking System</h1>
+    </header>
+    <div id="container">
+        <div id="sidebar">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="#" onclick="toggleSection('create-package')">Create a new travel package</a></li>
+                <!-- Add more menu options -->
+            </ul>
+        </div>
+        <div id="content">
+            <div id="create-package" style="display: none;">
+                <h2>Create a new travel package</h2>
+                <form id="package-form">
+                    <label for="package-name">Package Name:</label>
+                    <input type="text" id="package-name" required>
+                    <br>
+                    <h3>Add Components:</h3>
+                    <div id="components">
+                        <div class="component-field">
+                            <h4>Component 1</h4>
+                            <label for="component-type-1">Type:</label>
+                            <input type="text" id="component-type-1" class="component-type" required>
+                            <br>
+                            <label for="component-name-1">Name:</label>
+                            <input type="text" id="component-name-1" class="component-name" required>
+                            <br>
+                            <label for="component-price-1">Price:</label>
+                            <input type="number" step="0.01" id="component-price-1" class="component-price" required>
+                            <br>
+                        </div>
+                    </div>
+                    <button type="button" id="add-component">Add Component</button>
+                    <br>
+                    <button type="submit">Create Package</button>
+                </form>
+            </div>
+            <!-- Add more content sections -->
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2023 Travel Booking System. All rights reserved.</p>
+    </footer>
+</body>
+</html>
